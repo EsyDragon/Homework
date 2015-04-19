@@ -1,5 +1,6 @@
 !p173页例题
 !一维扩散方程求解
+!张亦龙 12344045
       module global
             implicit none
             real,parameter::H=0.1,TAO=1E-1,D=0.1,TMAX=10
@@ -21,9 +22,11 @@
             real::r(N)
             integer::i,k
             real::t
+            real::u(N)
             !初始条件
-            real::u(N)=(/ ((exp(x(I))),I=1,N) /)
-
+            do i=1,N
+                  u(i)=exp(X(i))
+            end do
             !计算原始系数矩阵
             call coef(a)
             !计算消元系数矩阵

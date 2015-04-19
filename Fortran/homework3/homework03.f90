@@ -1,15 +1,14 @@
+!变量精度所限COLUMN<82
       module global
             implicit none
-            integer,parameter::E1=4,E0=16
-            integer,parameter::N1=10,N0=15
-            integer,parameter::S=3
+            integer,parameter::ROW=3,COLUMN=10
+            integer,parameter::E1=(COLUMN-1),E0=2*(COLUMN-1)*(ROW-1)
+            integer,parameter::N1=(ROW-1)*COLUMN,N0=ROW*COLUMN
             real,parameter::PI=ACOS(-1.0)
-            real::RADIUS(S)=(/6,8,10/)
+            real::RADIUS(ROW)
             real::X(N0),Y(N0)
-            integer::V(E0,3)=reshape([6,8,8,10,2,2,4,4,6,7,8,9,7,7,9,9  &
-     &                         ,2,3,4,5,6,7,8,9,11,13,13,15,11,12,13,14 &
-     &                  ,1,2,3,4,7,8,9,10,7,8,9,10,12,13,14,15],[E0,3])
-            real::Z(E0,3,3),K(N1,N1),R(N1)
+            integer::V(E0,3)
+            real::Z(E0,3,3),K(N1,N1),R(N0)
             real::rf(E0,3),rq(E0,3)
       end module
 
@@ -18,11 +17,17 @@
             implicit none
             integer::i,e,j
             real::u(N0)
+
+            call VNprpr()
             
-            do j=1,S
-                  do i=0,4
-                        X(5*(j-1)+1+i)=RADIUS(j)*cos(PI/8.0*i)
-                        Y(5*(j-1)+1+i)=RADIUS(j)*sin(PI/8.0*i)
+            do j=1,ROW
+                  RADIUS(j)=6.0+(10.0-6.0)/(ROW-1)*(j-1)
+            end do
+
+            do j=1,ROW
+                  do i=0,E1
+                        X(COLUMN*(j-1)+1+i)=RADIUS(j)*cos(PI/2.0/E1*i)
+                        Y(COLUMN*(j-1)+1+i)=RADIUS(j)*sin(PI/2.0/E1*i)
                   end do
             end do
 
@@ -40,9 +45,39 @@
             call solve(u)
             open(100,file='homework03.dat',status='replace')
             do i=1,N0
-                  write(100,'(F12.8XF12.8XF12.8)') X(i),Y(i),u(i)
+                  write(100,'(F20.8XF20.8XF20.8)') X(i),Y(i),u(i)
             end do
             close(100)
+      end
+
+      subroutine VNprpr()
+            use global
+            implicit none
+            integer::e,i,j
+
+            do e=1,E1
+                  V(e,1)=COLUMN+e
+                  V(e,2)=e+1
+                  V(e,3)=e
+            end do
+
+            do j=2,2*(ROW-1),2
+                  do i=1,(COLUMN-1)
+                        e=(COLUMN-1)*(j-1)+i
+                        V(e,1)=COLUMN*(j/2-1)+i+1
+                        V(e,2)=COLUMN*(j/2)+i
+                        V(e,3)=COLUMN*(j/2)+i+1
+                  end do
+            end do
+
+            do j=3,2*(ROW-1),2
+                  do i=1,(COLUMN-1)
+                        e=(COLUMN-1)*(j-1)+i
+                        V(e,1)=COLUMN*(j/2)+i
+                        V(e,2)=COLUMN*(j/2)+i+1
+                        V(e,3)=COLUMN*(j/2+1)+i
+                  end do
+            end do
       end
 
       subroutine elementAnalysis(e)

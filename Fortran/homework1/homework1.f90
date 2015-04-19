@@ -1,4 +1,5 @@
 !此程序采用兼用源码格式,在gfortran下测试通过
+!张亦龙 20150306
 !三点电荷电场强度的计算
 !由于fortran的绘图库大多不够强,本程序导出数据并在Mathematica下绘图
       module global

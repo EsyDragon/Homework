@@ -1,5 +1,6 @@
       !有限元差分法求解矩形域的泊松方程
       !计算物理学p182
+      !张亦龙 12344045
       module global
             implicit none
             !W超松弛因子,EPS误差界限,H步长
